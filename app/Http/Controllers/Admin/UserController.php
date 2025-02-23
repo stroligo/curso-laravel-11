@@ -7,6 +7,8 @@ use App\Http\Requests\StoreUserRequest;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 
 class UserController extends Controller
 {
@@ -55,6 +57,36 @@ class UserController extends Controller
         return redirect()
             ->route('users.index')
             ->with('success', 'Usuário atualizado com sucesso!')
+        ;
+    }
+
+    public function show(string $id)
+    {
+        if (!$user = User::find($id)) {
+            return redirect()->route('users.index')->with('error', 'Usuário não encontrado!');
+        }
+        return view('admin.users.show', compact('user'));
+    }
+    public function destroy(string $id)
+    {
+
+        // if (Gate::denies('is-admin')) {
+        //    return back()->with('error', 'Acesso negado!');
+        //} 
+
+        if (!$user = User::find($id)) {
+            return redirect()->route('users.index')->with('error', 'Usuário nao encontrado!');
+        }
+
+        if (Auth::check() && Auth::user()->id === $user->id) {
+            return redirect()->route('users.index')->with('error', 'Não é possível excluir o próprio usuário!');
+        }
+        $userName = $user->name;
+        $user->delete();
+
+        return redirect()
+            ->route('users.index')
+            ->with('success', 'Usuário "' . $userName . '" excluido com sucesso!')
         ;
     }
 }

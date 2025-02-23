@@ -7,10 +7,7 @@
 <x-alert />
 
 <form action="{{ route('users.update', $user->id) }}" method="POST">
-    @csrf()
     @method('PUT')
-    <input type="text" name="name" placeholder="Nome" value="{{ $user->name }}">
-    <input type="email" name="email" placeholder="Email" value="{{ $user->email }}">
-    <button type="submit">Editar</button>
+    @include('admin.users.partials.form')
 </form>
 @endsection
